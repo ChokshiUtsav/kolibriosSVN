@@ -1,3 +1,9 @@
+/*Author : Utsav Chokshi
+  Version : 1.0
+  Date : 12/03/2015
+  Developer Chat ID : Utsav_Choskhi
+  */
+
 #include <menuet/os.h>
 #include <stdio.h>
 #include <math.h>
