@@ -1,0 +1,318 @@
+Archive member included to satisfy reference by file (symbol)
+
+/home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+                              colorpicker.o (__menuet__define_window)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+                              colorpicker.o (__menuet__write_text)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+                              /home/utsav/Softwares/menuetlibc/stub/crt0.o (__menuet__app_path_area)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+                              colorpicker.o (__menuet__getkey)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+                              colorpicker.o (__menuet__wait_for_event)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+                              colorpicker.o (__menuet__make_button)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+                              /home/utsav/Softwares/menuetlibc/stub/crt0.o (__crt1_startup)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o) (__crt0_setup_arguments)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o) (init_brk)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+                              colorpicker.o (strlen)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+                              colorpicker.o (malloc)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o) (exit)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o) (errno)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o) (dosemu_inithandles)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o) (__main)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o) (strrchr)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o) (strcpy)
+/home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+                              /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o) (memcpy)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+
+.text           0x0000000000000000      0xb70
+                0x0000000000000000                code = .
+                0x0000000000000000                _code = .
+ *(.text)
+ .text          0x0000000000000000       0x24 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+                0x0000000000000000                __menuet__app_header
+                0x0000000000000000                start
+                0x0000000000000014                __menuet__memsize
+ .text          0x0000000000000024      0x2de colorpicker.o
+                0x0000000000000024                int_to_hexstring
+                0x0000000000000069                draw_matrix_of_buttons
+                0x00000000000001b3                redraw_window
+                0x0000000000000278                draw_window
+ .text          0x0000000000000302       0x43 /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+                0x0000000000000302                __menuet__define_window
+                0x0000000000000334                __menuet__window_redraw
+ .text          0x0000000000000345       0x26 /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+                0x0000000000000345                __menuet__write_text
+ .text          0x000000000000036b        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+ .text          0x000000000000036b       0x18 /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+                0x000000000000036b                __menuet__getkey
+ .text          0x0000000000000383       0x29 /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+                0x0000000000000383                __menuet__wait_for_event
+                0x000000000000038f                __menuet__check_for_event
+                0x000000000000039b                __menuet__set_bitfield_for_wanted_events
+ .text          0x00000000000003ac       0x4b /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+                0x00000000000003ac                __menuet__make_button
+                0x00000000000003dc                __menuet__get_button_id
+ .text          0x00000000000003f7       0x43 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+                0x00000000000003f7                __crt1_startup
+ .text          0x000000000000043a      0x13b /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+                0x00000000000004ba                _exit
+                0x00000000000004c4                __crt0_setup_arguments
+ .text          0x0000000000000575      0x15a /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+                0x0000000000000575                init_brk
+                0x00000000000005c9                sbrk
+ .text          0x00000000000006cf       0x16 /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+                0x00000000000006cf                strlen
+ .text          0x00000000000006e5      0x316 /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+                0x000000000000077e                malloc
+                0x000000000000091a                free
+                0x0000000000000999                realloc
+ .text          0x00000000000009fb       0x21 /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+                0x00000000000009fb                exit
+ .text          0x0000000000000a1c        0xa /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+                0x0000000000000a1c                __isatty
+ .text          0x0000000000000a26       0x70 /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+                0x0000000000000a26                dosemu_inithandles
+                0x0000000000000a6b                init_dir_stack
+ .text          0x0000000000000a96       0x39 /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+                0x0000000000000a96                __main
+ .text          0x0000000000000acf       0x24 /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+                0x0000000000000acf                strrchr
+ .text          0x0000000000000af3       0x19 /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+                0x0000000000000af3                strcpy
+ .text          0x0000000000000b0c       0x2b /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+                0x0000000000000b0c                memcpy
+ *(.fixup)
+ *(.gnu.warning)
+ *(.gnu.linkonce.t*)
+ *(.const)
+ *(.ro*)
+ *fill*         0x0000000000000b37        0x1 
+ .rodata        0x0000000000000b38       0x2e colorpicker.o
+                0x0000000000000b48                header
+ *fill*         0x0000000000000b66        0x2 
+ .rodata.cst4   0x0000000000000b68        0x8 colorpicker.o
+ *(.gnu.linkonce.r*)
+                0x0000000000000b70                ecode = .
+                0x0000000000000b70                _ecode = .
+
+.iplt           0x0000000000000b70        0x0
+ .iplt          0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+
+.text.startup   0x0000000000000b70       0x4f
+ .text.startup  0x0000000000000b70       0x4f colorpicker.o
+                0x0000000000000b70                main
+
+.rel.dyn        0x0000000000000bc0        0x0
+ .rel.iplt      0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+ .rel.text      0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+ .rel.text.startup
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+
+.rdata
+
+.data           0x0000000000000bc0      0x57c
+                0x0000000000000bc0                djgpp_first_ctor = .
+ *(.ctor)
+ *(.ctors)
+                0x0000000000000bc0                djgpp_last_ctor = .
+                0x0000000000000bc0                djgpp_first_dtor = .
+ *(.dtor)
+ *(.dtors)
+                0x0000000000000bc0                djgpp_last_dtor = .
+ *(.gcc_exc*)
+                0x0000000000000bc0                __EH_FRAME_BEGIN__ = .
+ *(.eh_fram*)
+ .eh_frame      0x0000000000000bc0       0xdc colorpicker.o
+ .eh_frame      0x0000000000000c9c       0x50 /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+                                         0x68 (size before relaxing)
+ .eh_frame      0x0000000000000cec       0x28 /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+                                         0x40 (size before relaxing)
+ .eh_frame      0x0000000000000d14       0x20 /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+                                         0x38 (size before relaxing)
+ .eh_frame      0x0000000000000d34       0x64 /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+                                         0x7c (size before relaxing)
+ .eh_frame      0x0000000000000d98       0x48 /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+                                         0x60 (size before relaxing)
+ .eh_frame      0x0000000000000de0       0x1c /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+                                         0x34 (size before relaxing)
+ .eh_frame      0x0000000000000dfc       0x84 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+                                         0x9c (size before relaxing)
+ .eh_frame      0x0000000000000e80       0x50 /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+                                         0x68 (size before relaxing)
+ .eh_frame      0x0000000000000ed0       0x24 /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+                                         0x3c (size before relaxing)
+ .eh_frame      0x0000000000000ef4       0xdc /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+                                         0xf4 (size before relaxing)
+ .eh_frame      0x0000000000000fd0       0x1c /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+                                         0x34 (size before relaxing)
+ .eh_frame      0x0000000000000fec       0x20 /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+                                         0x38 (size before relaxing)
+ .eh_frame      0x000000000000100c       0x40 /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+                                         0x58 (size before relaxing)
+ .eh_frame      0x000000000000104c       0x28 /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+                                         0x40 (size before relaxing)
+ .eh_frame      0x0000000000001074       0x24 /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+                                         0x3c (size before relaxing)
+ .eh_frame      0x0000000000001098       0x28 /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+                                         0x40 (size before relaxing)
+ .eh_frame      0x00000000000010c0       0x28 /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+                                         0x40 (size before relaxing)
+                0x00000000000010e8                __EH_FRAME_END__ = .
+                0x00000000000010e8        0x4 LONG 0x0
+ *(.gnu.linkonce.d*)
+ *(.rodata)
+ *(.rodata.*)
+ *(.data)
+ .data          0x00000000000010ec       0x3c colorpicker.o
+                0x00000000000010ec                footer
+                0x0000000000001108                string
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+ .data          0x0000000000001128        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+ .data          0x0000000000001128        0x4 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+                0x0000000000001128                __bss_count
+ .data          0x000000000000112c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+ .data          0x000000000000112c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+ .data          0x000000000000112c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+ .data          0x000000000000112c        0xc /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+ .data          0x0000000000001138        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+ .data          0x0000000000001138        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+ .data          0x0000000000001138        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+ .data          0x0000000000001138        0x4 /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+ .data          0x000000000000113c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+ .data          0x000000000000113c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+ .data          0x000000000000113c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+                0x000000000000113c                edata = .
+                0x000000000000113c                _edata = .
+                0x000000000000113c                bss = .
+
+.igot.plt       0x000000000000113c        0x0
+ .igot.plt      0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+
+.bss            0x000000000000113c    0x190b8
+ *(.bss)
+ .bss           0x000000000000113c    0x10000 /home/utsav/Softwares/menuetlibc/stub/crt0.o
+ .bss           0x000000000001113c        0x0 colorpicker.o
+ .bss           0x000000000001113c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+ .bss           0x000000000001113c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+ .bss           0x000000000001113c      0x800 /home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+                0x000000000001113c                __menuet__app_path_area
+                0x000000000001153c                __menuet__app_param_area
+ .bss           0x000000000001193c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+ .bss           0x000000000001193c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+ .bss           0x000000000001193c        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+ .bss           0x000000000001193c       0x14 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+                0x000000000001193c                __dos_argv0
+                0x0000000000011940                __crt0_argv
+                0x0000000000011944                __crt0_argc
+                0x0000000000011948                _crt0_startup_flags
+                0x000000000001194c                environ
+ .bss           0x0000000000011950        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+ .bss           0x0000000000011950       0x18 /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+ .bss           0x0000000000011968        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+ .bss           0x0000000000011968       0x80 /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+ .bss           0x00000000000119e8        0x8 /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+                0x00000000000119e8                keypress_at_exit
+                0x00000000000119ec                __atexit_ptr
+ .bss           0x00000000000119f0        0x4 /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+                0x00000000000119f0                errno
+ .bss           0x00000000000119f4     0x8800 /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+                0x00000000000119f4                __curdir_buf
+                0x0000000000011df4                _io_handles
+ .bss           0x000000000001a1f4        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+ .bss           0x000000000001a1f4        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+ .bss           0x000000000001a1f4        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+ .bss           0x000000000001a1f4        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+                0x000000000001a1f4                end = .
+                0x000000000001a1f4                _end = .
+LOAD /home/utsav/Softwares/menuetlibc/stub/crt0.o
+LOAD colorpicker.o
+LOAD /home/utsav/Softwares/menuetlibc/lib/libc.a
+OUTPUT(colorpicker elf32-i386)
+
+.comment        0x0000000000000000       0x2b
+ .comment       0x0000000000000000       0x2b colorpicker.o
+                                         0x2c (size before relaxing)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+ .comment       0x0000000000000000       0x2c /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
+
+.note.GNU-stack
+                0x0000000000000000        0x0
+ .note.GNU-stack
+                0x0000000000000000        0x0 colorpicker.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(window.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(text.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(param.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(keyb.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(event.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(button.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt1.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(crt0.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(brk.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strlen.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(malloc.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(exit.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(errno.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(emu_init.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(_main.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strrchr.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(strcpy.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /home/utsav/Softwares/menuetlibc/lib/libc.a(memcpy.o)
