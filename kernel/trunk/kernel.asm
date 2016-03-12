@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; Copyright (C) KolibriOS team 2004-2015. All rights reserved.
+;; Copyright (C) KolibriOS team 2004-2016. All rights reserved.
 ;; PROGRAMMING:
 ;; Ivan Poddubny
 ;; Marat Zakiyanov (Mario79)
@@ -71,7 +71,7 @@ format binary as "mnt"
 include 'macros.inc'
 include 'struct.inc'
 
-$Revision$
+$Revision: 6272 $
 
 
 USE_COM_IRQ     equ 1      ; make irq 3 and irq 4 available for PCI devices
@@ -253,7 +253,7 @@ B32:
         mov     fs, ax
         mov     gs, ax
         mov     ss, ax
-        mov     esp, 0x006CC00       ; Set stack
+        mov     esp, TMP_STACK_TOP       ; Set stack
 
 ; CLEAR 0x280000 - HEAP_BASE
 
@@ -305,12 +305,7 @@ B32:
 align 4
 bios32_entry    dd ?
 tmp_page_tabs   dd ?
-
 use16
-org $-0x10000
-include "boot/shutdown.inc" ; shutdown or restart
-org $+0x10000
-
 ap_init16:
         cli
         lgdt    [cs:gdts_ap-ap_init16]
@@ -445,103 +440,18 @@ high_code:
 ; -----------------------------------------
         mov     al, [BOOT_VARS+BOOT_DMA]            ; DMA access
         mov     [allow_dma_access], al
-        movzx   eax, byte [BOOT_VARS+BOOT_BPP]      ; bpp
-        mov     [_display.bits_per_pixel], eax
-        mov     [_display.vrefresh], 60
+
         mov     al, [BOOT_VARS+BOOT_DEBUG_PRINT]    ; If nonzero, duplicates debug output to the screen
         mov     [debug_direct_print], al
+
         mov     al, [BOOT_VARS+BOOT_LAUNCHER_START] ; Start the first app (LAUNCHER) after kernel is loaded?
         mov     [launcher_start], al
-        movzx   eax, word [BOOT_VARS+BOOT_X_RES]; X max
-        mov     [_display.width], eax
-        mov     [display_width_standard], eax
-        dec     eax
-        mov     [screen_workarea.right], eax
-        movzx   eax, word [BOOT_VARS+BOOT_Y_RES]; Y max
-        mov     [_display.height], eax
-        mov     [display_height_standard], eax
-        dec     eax
-        mov     [screen_workarea.bottom], eax
-        movzx   eax, word [BOOT_VARS+BOOT_VESA_MODE] ; screen mode
-        mov     dword [SCR_MODE], eax
-;        mov     eax, [BOOT_VAR+0x9014]             ; Vesa 1.2 bnk sw add
-;        mov     [BANK_SWITCH], eax
-        mov     eax, 640 *4                         ; Bytes PerScanLine
-        cmp     [SCR_MODE], word 0x13               ; 320x200
-        je      @f
-        cmp     [SCR_MODE], word 0x12               ; VGA 640x480
-        je      @f
-        movzx   eax, word[BOOT_VARS+BOOT_PITCH]      ; for other modes
-@@:
-        mov     [_display.lfb_pitch], eax
-        mov     eax, [_display.width]
-        mul     [_display.height]
-        mov     [_display.win_map_size], eax
-
-        call    calculate_fast_getting_offset_for_WinMapAddress
-; for Qemu or non standart video cards
-; Unfortunately [BytesPerScanLine] does not always
-;                             equal to [_display.width] * [ScreenBPP] / 8
-        call    calculate_fast_getting_offset_for_LFB
 
         mov     esi, BOOT_VARS+0x9080
         movzx   ecx, byte [esi-1]
         mov     [NumBiosDisks], ecx
         mov     edi, BiosDisksData
         rep movsd
-
-setvideomode:
-
-        mov     eax, [BOOT_VARS+BOOT_LFB]
-        mov     [LFBAddress], eax
-
-        cmp     word [SCR_MODE], 0x0012                 ; VGA (640x480 16 colors)
-        je      .vga
-        cmp     word [SCR_MODE], 0x0013                 ; MCGA (320*200 256 colors)
-        je      .32bpp
-        cmp     byte [_display.bits_per_pixel], 32
-        je      .32bpp
-        cmp     byte [_display.bits_per_pixel], 24
-        je      .24bpp
-        cmp     byte [_display.bits_per_pixel], 16
-        je      .16bpp
-;        cmp     byte [_display.bits_per_pixel], 15
-;        je      .15bpp
-
-  .vga:
-        mov     [PUTPIXEL], VGA_putpixel
-        mov     [GETPIXEL], Vesa20_getpixel32           ; Conversion buffer is 32 bpp
-        mov     [_display.bytes_per_pixel], 4           ; Conversion buffer is 32 bpp
-        jmp     .finish
-
-;  .15bpp:
-;        mov     [PUTPIXEL], Vesa20_putpixel15
-;        mov     [GETPIXEL], Vesa20_getpixel15
-;        mov     [_display.bytes_per_pixel], 2
-;        jmp     .finish
-
-  .16bpp:
-        mov     [PUTPIXEL], Vesa20_putpixel16
-        mov     [GETPIXEL], Vesa20_getpixel16
-        mov     [_display.bytes_per_pixel], 2
-        jmp     .finish
-
-  .24bpp:
-        mov     [PUTPIXEL], Vesa20_putpixel24
-        mov     [GETPIXEL], Vesa20_getpixel24
-        mov     [_display.bytes_per_pixel], 3
-        jmp     .finish
-
-  .32bpp:
-        mov     [PUTPIXEL], Vesa20_putpixel32
-        mov     [GETPIXEL], Vesa20_getpixel32
-        mov     [_display.bytes_per_pixel], 4
-;        jmp     .finish
-
-  .finish:
-        mov     [MOUSE_PICTURE], mousepointer
-        mov     [_display.check_mouse], check_mouse_area_for_putpixel
-        mov     [_display.check_m_pixel], check_mouse_area_for_getpixel
 
 ; -------- Fast System Call init ----------
 ; Intel SYSENTER/SYSEXIT (AMD CPU support it too)
@@ -624,8 +534,16 @@ setvideomode:
         mov     ax, tss0
         ltr     ax
 
-        mov     [LFBSize], 0xC00000
-        call    init_LFB
+        mov     eax, sys_proc
+        list_init eax
+        add     eax, PROC.thr_list
+        list_init eax
+
+        call    init_video
+        call    init_mtrr
+        mov     [LFBAddress], LFB_BASE
+        mov     ecx, bios_fb
+        call    set_framebuffer
         call    init_fpu
         call    init_malloc
 
@@ -712,13 +630,8 @@ setvideomode:
         mov     esi, boot_setostask
         call    boot_log
 
-        mov     eax, sys_proc
-        lea     edi, [eax+PROC.heap_lock]
+        mov     edi, sys_proc+PROC.heap_lock
         mov     ecx, (PROC.ht_free-PROC.heap_lock)/4
-
-        list_init eax
-        add     eax, PROC.thr_list
-        list_init eax
 
         xor     eax, eax
         cld
@@ -1716,9 +1629,13 @@ draw_num_text:
         add     eax, [edi+SLOT_BASE+APPDATA.wnd_clientbox.top]
         add     ebx, eax
         mov     ecx, [esp+64+32-12+4]
-        and     ecx, not 0x80000000     ; force counted string
         mov     eax, [esp+64+8]         ; background color (if given)
         mov     edi, [esp+64+4]
+        and     ecx, 5FFFFFFFh
+        bt      ecx, 27
+        jnc     @f
+        mov     edi, eax
+@@:
         jmp     dtext
 ;-----------------------------------------------------------------------------
 iglobal
@@ -2177,7 +2094,7 @@ sys_end:
 @@:
 
         mov     eax, [TASK_BASE]
-        mov     [eax+TASKDATA.state], 3; terminate this program
+        mov     [eax+TASKDATA.state], TSTATE_ZOMBIE
         call    wakeup_osloop
 
 .waitterm:            ; wait here for termination
@@ -3746,7 +3663,7 @@ nobackgr:
 align 4
 markz:
         push    ecx edx
-        cmp     [edx+TASKDATA.state], 9
+        cmp     [edx+TASKDATA.state], TSTATE_FREE
         jz      .nokill
         lea     edx, [(edx-(CURRENT_TASK and 1FFFFFFFh))*8+SLOT_BASE]
         cmp     [edx+APPDATA.process], sys_proc
@@ -3760,7 +3677,7 @@ markz:
         pop     edx ecx
         test    eax, eax
         jz      @f
-        mov     [edx+TASKDATA.state], byte 3
+        mov     [edx+TASKDATA.state], TSTATE_ZOMBIE
 @@:
         add     edx, 0x20
         loop    markz
@@ -5722,266 +5639,6 @@ undefined_syscall:                      ; Undefined system call
         mov     [esp + 32], dword -1
         ret
 
-align 4
-system_shutdown:          ; shut down the system
-
-        cmp     byte [BOOT_VARS+0x9030], 1
-        jne     @F
-        ret
-@@:
-        call    stop_all_services
-
-yes_shutdown_param:
-; Shutdown other CPUs, if initialized
-        cmp     [ap_initialized], 0
-        jz      .no_shutdown_cpus
-        mov     edi, [LAPIC_BASE]
-        add     edi, 300h
-        mov     esi, smpt+4
-        mov     ebx, [cpu_count]
-        dec     ebx
-.shutdown_cpus_loop:
-        lodsd
-        push    esi
-        xor     esi, esi
-        inc     esi
-        shl     eax, 24
-        mov     [edi+10h], eax
-; assert INIT IPI
-        mov     dword [edi], 0C500h
-        call    delay_ms
-@@:
-        test    dword [edi], 1000h
-        jnz     @b
-; deassert INIT IPI
-        mov     dword [edi], 8500h
-        call    delay_ms
-@@:
-        test    dword [edi], 1000h
-        jnz     @b
-; don't send STARTUP IPI: let other CPUs be in wait-for-startup state
-        pop     esi
-        dec     ebx
-        jnz     .shutdown_cpus_loop
-.no_shutdown_cpus:
-
-        cli
-
-if ~ defined extended_primary_loader
-; load kernel.mnt to 0x7000:0
-        mov     ebx, kernel_file_load
-        pushad
-        call    file_system_lfn
-        popad
-
-        mov     esi, restart_kernel_4000+OS_BASE+0x10000 ; move kernel re-starter to 0x4000:0
-        mov     edi, OS_BASE+0x40000
-        mov     ecx, 1000
-        rep movsb
-end if
-
-;        mov     esi, BOOT_VAR    ; restore 0x0 - 0xffff
-;        mov     edi, OS_BASE
-;        mov     ecx, 0x10000/4
-;        cld
-;        rep movsd
-
-        call    IRQ_mask_all
-
-        cmp     byte [OS_BASE + 0x9030], 2
-        jnz     no_acpi_power_off
-
-; scan for RSDP
-; 1) The first 1 Kb of the Extended BIOS Data Area (EBDA).
-        movzx   eax, word [OS_BASE + 0x40E]
-        shl     eax, 4
-        jz      @f
-        mov     ecx, 1024/16
-        call    scan_rsdp
-        jnc     .rsdp_found
-@@:
-; 2) The BIOS read-only memory space between 0E0000h and 0FFFFFh.
-        mov     eax, 0xE0000
-        mov     ecx, 0x2000
-        call    scan_rsdp
-        jc      no_acpi_power_off
-.rsdp_found:
-        mov     esi, [eax+16]   ; esi contains physical address of the RSDT
-        mov     ebp, [ipc_tmp]
-        stdcall map_page, ebp, esi, PG_READ
-        lea     eax, [esi+1000h]
-        lea     edx, [ebp+1000h]
-        stdcall map_page, edx, eax, PG_READ
-        and     esi, 0xFFF
-        add     esi, ebp
-        cmp     dword [esi], 'RSDT'
-        jnz     no_acpi_power_off
-        mov     ecx, [esi+4]
-        sub     ecx, 24h
-        jbe     no_acpi_power_off
-        shr     ecx, 2
-        add     esi, 24h
-.scan_fadt:
-        lodsd
-        mov     ebx, eax
-        lea     eax, [ebp+2000h]
-        stdcall map_page, eax, ebx, PG_READ
-        lea     eax, [ebp+3000h]
-        add     ebx, 0x1000
-        stdcall map_page, eax, ebx, PG_READ
-        and     ebx, 0xFFF
-        lea     ebx, [ebx+ebp+2000h]
-        cmp     dword [ebx], 'FACP'
-        jz      .fadt_found
-        loop    .scan_fadt
-        jmp     no_acpi_power_off
-.fadt_found:
-; ebx is linear address of FADT
-        mov     edi, [ebx+40] ; physical address of the DSDT
-        lea     eax, [ebp+4000h]
-        stdcall map_page, eax, edi, PG_READ
-        lea     eax, [ebp+5000h]
-        lea     esi, [edi+0x1000]
-        stdcall map_page, eax, esi, PG_READ
-        and     esi, 0xFFF
-        sub     edi, esi
-        cmp     dword [esi+ebp+4000h], 'DSDT'
-        jnz     no_acpi_power_off
-        mov     eax, [esi+ebp+4004h] ; DSDT length
-        sub     eax, 36+4
-        jbe     no_acpi_power_off
-        add     esi, 36
-.scan_dsdt:
-        cmp     dword [esi+ebp+4000h], '_S5_'
-        jnz     .scan_dsdt_cont
-        cmp     byte [esi+ebp+4000h+4], 12h ; DefPackage opcode
-        jnz     .scan_dsdt_cont
-        mov     dl, [esi+ebp+4000h+6]
-        cmp     dl, 4 ; _S5_ package must contain 4 bytes
-                      ; ...in theory; in practice, VirtualBox has 2 bytes
-        ja      .scan_dsdt_cont
-        cmp     dl, 1
-        jb      .scan_dsdt_cont
-        lea     esi, [esi+ebp+4000h+7]
-        xor     ecx, ecx
-        cmp     byte [esi], 0 ; 0 means zero byte, 0Ah xx means byte xx
-        jz      @f
-        cmp     byte [esi], 0xA
-        jnz     no_acpi_power_off
-        inc     esi
-        mov     cl, [esi]
-@@:
-        inc     esi
-        cmp     dl, 2
-        jb      @f
-        cmp     byte [esi], 0
-        jz      @f
-        cmp     byte [esi], 0xA
-        jnz     no_acpi_power_off
-        inc     esi
-        mov     ch, [esi]
-@@:
-        jmp     do_acpi_power_off
-.scan_dsdt_cont:
-        inc     esi
-        cmp     esi, 0x1000
-        jb      @f
-        sub     esi, 0x1000
-        add     edi, 0x1000
-        push    eax
-        lea     eax, [ebp+4000h]
-        stdcall map_page, eax, edi, PG_READ
-        push    PG_READ
-        lea     eax, [edi+1000h]
-        push    eax
-        lea     eax, [ebp+5000h]
-        push    eax
-        stdcall map_page
-        pop     eax
-@@:
-        dec     eax
-        jnz     .scan_dsdt
-        jmp     no_acpi_power_off
-do_acpi_power_off:
-        mov     edx, [ebx+48]
-        test    edx, edx
-        jz      .nosmi
-        mov     al, [ebx+52]
-        out     dx, al
-        mov     edx, [ebx+64]
-@@:
-        in      ax, dx
-        test    al, 1
-        jz      @b
-.nosmi:
-        and     cx, 0x0707
-        shl     cx, 2
-        or      cx, 0x2020
-        mov     edx, [ebx+64]
-        in      ax, dx
-        and     ax, 203h
-        or      ah, cl
-        out     dx, ax
-        mov     edx, [ebx+68]
-        test    edx, edx
-        jz      @f
-        in      ax, dx
-        and     ax, 203h
-        or      ah, ch
-        out     dx, ax
-@@:
-        jmp     $
-
-
-scan_rsdp:
-        add     eax, OS_BASE
-.s:
-        cmp     dword [eax], 'RSD '
-        jnz     .n
-        cmp     dword [eax+4], 'PTR '
-        jnz     .n
-        xor     edx, edx
-        xor     esi, esi
-@@:
-        add     dl, [eax+esi]
-        inc     esi
-        cmp     esi, 20
-        jnz     @b
-        test    dl, dl
-        jz      .ok
-.n:
-        add     eax, 10h
-        loop    .s
-        stc
-.ok:
-        ret
-
-no_acpi_power_off:
-        call    create_trampoline_pgmap
-        mov     cr3, eax
-        jmp     become_real+0x10000
-iglobal
-align 4
-realmode_gdt:
-; selector 0 - not used
-        dw      23
-        dd      realmode_gdt-OS_BASE
-        dw      0
-; selector 8 - code from 1000:0000 to 1000:FFFF
-        dw      0FFFFh
-        dw      0
-        db      1
-        db      10011011b
-        db      00000000b
-        db      0
-; selector 10h - data from 1000:0000 to 1000:FFFF
-        dw      0FFFFh
-        dw      0
-        db      1
-        db      10010011b
-        db      00000000b
-        db      0
-endg
 
 if ~ lang eq sp
 diff16 "end of .text segment",0,$
