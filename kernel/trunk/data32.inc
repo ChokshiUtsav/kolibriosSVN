@@ -5,7 +5,7 @@
 ;;                                                              ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-$Revision$
+$Revision: 6263 $
 
 
 keymap:
@@ -173,11 +173,11 @@ end if
 vmode          db  '/sys/drivers/VMODE.MDR',0
 ;vrr_m          db  'VRR_M',0
 kernel_file_load:
-; load kernel.mnt to 0x7000:0
+; load kernel.mnt to _CLEAN_ZONE
         dd      0       ; subfunction
         dq      0       ; offset in file
-        dd      0x30000 ; number of bytes to read
-        dd      OS_BASE + 0x71000 ; buffer for data
+        dd      0x31000 ; number of bytes to read
+        dd      _CLEAN_ZONE ; buffer for data
         db      '/RD/1/KERNEL.MNT',0
 
 dev_data_path  db '/RD/1/DRIVERS/DEVICES.DAT',0
@@ -358,7 +358,6 @@ free_blocks         rd 1
 mem_block_mask      rd 2
 next_memblock       rd 1
 
-
 mst                 MEM_STATE
 
 pte_valid_mask      rd 1
@@ -371,11 +370,10 @@ os_stack_seg        rd 1
 srv.fd              rd 1
 srv.bk              rd 1
 
-
 align 16
 
 _display            display_t
-
+bios_fb             FRB
 
 LFBAddress          dd ?
 

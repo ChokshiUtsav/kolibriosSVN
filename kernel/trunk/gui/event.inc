@@ -5,7 +5,7 @@
 ;; Distributed under terms of the GNU General Public License    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-$Revision$
+$Revision: 5788 $
 
 WINDOW_MOVE_AND_RESIZE_FLAGS = \
   mouse.WINDOW_RESIZE_N_FLAG + \

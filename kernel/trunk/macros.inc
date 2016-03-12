@@ -15,7 +15,7 @@ macro $Revision a {
   \}
 }
 
-$Revision$
+$Revision: 5788 $
 
 
 ;// mike.dld, 2006-29-01 [

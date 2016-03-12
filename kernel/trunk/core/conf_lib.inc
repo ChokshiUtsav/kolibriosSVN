@@ -10,7 +10,7 @@
 ;    {SPraid.simba}
 ;-------------------------------------------------------------------------
 
-$Revision$
+$Revision: 5363 $
 
 iglobal
 conf_path_sect:

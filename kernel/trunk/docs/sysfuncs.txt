@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                              ;;
-;; Copyright (C) KolibriOS team 2004-2012. All rights reserved. ;;
+;; Copyright (C) KolibriOS team 2004-2016. All rights reserved. ;;
 ;; Distributed under terms of the GNU General Public License    ;;
 ;;                                                              ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,19 +25,17 @@ Parameters:
   * ecx = [coordinate on axis y]*65536 + [size on axis y]
   * edx = 0xXYRRGGBB, where:
     * Y = style of the window:
-      * Y=0 - type I - fixed-size window
       * Y=1 - only define window area, draw nothing
-      * Y=2 - type II - variable-size window
       * Y=3 - skinned window
       * Y=4 - skinned fixed-size window
-      * other possible values (from 5 up to 15) are reserved,
+      * Y=0,2 window types are outdated and should not be used anymore, 
+        they are retained for compatibility with old programs.
+      * other possible values (from 5 to 15) are reserved,
         function call with such Y is ignored
     * RR, GG, BB = accordingly red, green, blue components of a color
       of the working area of the window (are ignored for style Y=1)
     * X = DCBA (bits)
-      * A = 1 - window has caption; for styles Y=3,4 caption string
-                  must be passed in edi, for other styles use
-                  subfunction 1 of function 71
+      * A = 1 - window has caption
       * B = 1 - coordinates of all graphics primitives are relative to
                   window client area
       * C = 1 - don't fill working area on window draw
@@ -47,11 +45,8 @@ Parameters:
   * esi = 0xXYRRGGBB - color of the header
     * RR, GG, BB define color
     * Y=0 - usual window, Y=1 - unmovable window (works for all window styles)
-    * X defines a gradient of header: X=0 - no gradient,
-      X=8 - usual gradient,
-      for windows of a type II X=4 - negative gradient
-    * other values of X and Y are reserved
-  * edi = 0x00RRGGBB - color of the frame
+    * X not used, other values of Y are reserved
+  * edi = caption string for styles Y=3,4 (also can be set by func 71.1)
 Returned value:
   * function does not return value
 Remarks:
@@ -79,34 +74,9 @@ Remarks:
   * The sizes of the window are understood in sence of coordinates
     of the right lower corner. This concerns all other functions too.
     It means, that the real sizes are on 1 pixel more.
-  * The window of type I looks as follows:
-    * draw external frame of color indicated in edi, 1 pixel in width
-    * draw header - rectangle with the left upper corner (1,1) and
-      right lower (xsize-1,min(20,ysize-1)) color indicated in esi
-      (taking a gradient into account)
-    * if ysize>21, fill the working area of the window -
-      rectangle with the left upper corner (1,21) and right lower
-      (xsize-1,ysize-1) (sizes (xsize-1)*(ysize-21)) with color
-      indicated in edx (taking a gradient into account)
-    * if A=1 and caption has been already set by subfunction 1
-      of function 71, it is drawn in the corresponding place of header
   * The window of style Y=1 looks as follows:
     * completely defined by the application
-  * The window of type II looks as follows:
-    * draw external frame of width 1 pixel with the "shaded" color
-      edi (all components of the color decrease twice)
-    * draw intermediate frame of width 3 pixels with color edi
-    * draw internal frame of width 1 pixel with the "shaded" color edi
-    * draw header - rectangle with the left upper corner (4,4)
-      and right lower (xsize-4,min(20,ysize)) color, indicated in esi
-      (taking a gradient into account)
-    * if ysize>=26, fill the working area of the window -
-      rectangle with the left upper corner (5,20) and right lower
-      (xsize-5,ysize-5) with color indicated in edx
-      (taking a gradient into account)
-    * if A=1 and caption has been already set by subfunction 1
-      of function 71, it is drawn in the corresponding place of header
-  * The skinned window looks as follows:
+  * The skinned window Y=3,4 looks as follows:
     * draw external frame of width 1 pixel
       with color 'outer' from the skin
     * draw intermediate frame of width 3 pixel
@@ -919,7 +889,7 @@ Format of the table: short version:
     For example, for the standard configuration from one 1.44-drive
     here will be 40h, and for the case 1.2Mb on A: and 1.44Mb on B:
     the value is 24h.
-    
+
   First IDE controller:
   * +1: byte: information about hard disks and CD-drives, AABBCCDD,
     where AA corresponds to the controller IDE0, ..., DD - IDE3:
@@ -930,7 +900,7 @@ Format of the table: short version:
     this field contains 48h.
   * +2: 4 db: number of the retrieved partitions on hard disks
     at accordingly IDE0,...,IDE3.
-    
+
   Second IDE controller:
   * +6: byte: information about hard disks and CD-drives, AABBCCDD,
     where AA corresponds to the controller IDE4, ..., DD - IDE7:
@@ -951,8 +921,8 @@ Format of the table: short version:
     For example, in the case HD on IDE8 and CD on IDE10
     this field contains 48h.
   * +12: 4 db: number of the retrieved partitions on hard disks
-    at accordingly IDE8,...,IDE11.   
-    
+    at accordingly IDE8,...,IDE11.
+
     If the hard disk on IDEx is absent, appropriate byte is zero,
     otherwise it shows number of the recognized partitions, which
     can be not presented (if the drive is not formatted or if
@@ -1071,35 +1041,37 @@ Parameters:
   * ebx = 19 - subfunction number
   * ecx = 0 - subsubfunction number
 Returned value:
-  * eax = current mouse speed
+  * eax = current speed divider
 
 ---------------- Subsubfunction 1 - set mouse speed. -----------------
 Parameters:
   * eax = 18 - function number
   * ebx = 19 - subfunction number
   * ecx = 1 - subsubfunction number
-  * edx = new value for speed
+  * edx = new value for speed divider
 Returned value:
   * function does not return value
 
-Remark: recommended speed = 1, 0 = lock the cursor.
+Remark: recommended speed divider = 4
 
-------------- Subsubfunction 2 - get mouse acceleration. -------------
+-------------- Subsubfunction 2 - get mouse sensitivity --------------
 Parameters:
   * eax = 18 - function number
   * ebx = 19 - subfunction number
   * ecx = 2 - subsubfunction number
 Returned value:
-  * eax = 0 - off, 1 - slight, 2 - medium, 3 - intense
+  * eax = current sensitivity
 
-------------- Subsubfunction 3 - set mouse acceleration. -------------
+-------------- Subsubfunction 3 - set mouse sensitivity --------------
 Parameters:
   * eax = 18 - function number
   * ebx = 19 - subfunction number
   * ecx = 3 - subsubfunction number
-  * edx = 0 - off, 1 - slight, 2 - medium, 3 - intense
+  * edx = new value for sensitivity
 Returned value:
   * function does not return value
+
+Remark: recommended sensitivity = 3
 
 ----------- Subsubfunction 4 - set mouse pointer position. -----------
 Parameters:
@@ -1631,7 +1603,7 @@ Returned value:
 Remarks:
   * Counter takes modulo 2^32, that correspond to a little more
     than 497 days.
-  * To get system time use function 3.  
+  * To get system time use function 3.
 
 ---------------------- Constants for registers: ----------------------
   eax - SF_SYSTEM_GET (26)
@@ -1645,7 +1617,7 @@ Parameters:
   * ebx = 10 - subfunction number
 Returned value:
   * eax = number of nanoseconds since system boot time (lower DWORD)
-  * edx = number of nanoseconds since system boot time (high DWORD)  
+  * edx = number of nanoseconds since system boot time (high DWORD)
 Remarks:
   * The counter is based on HPET, if HPET is not available, resolution
     will be reduced to 10 000 000 nanoseconds.
@@ -2109,12 +2081,16 @@ Parameters:
     * bit 31 set = do not display leading zeroes of the number
   * ecx = number (if bl=0) or pointer (if bl=1)
   * edx = [coordinate on axis x]*65536 + [coordinate on axis y]
-  * esi = 0xX0RRGGBB:
-    * RR, GG, BB specify the color
-    * X = ABnn (bits)
-    * nn = font (0/1)
-    * A is ignored
-    * B=1 - fill background with the color edi
+  * esi = 0xXXRRGGBB, where
+    * RR, GG, BB specify text color
+    * XX = 0B0FCSSS (bits):
+      * B=1 - fill background (color = edi)
+      * F specifies the font:
+        0 = 6x9
+        1 = 8x16
+      * C=0 - draw to the window,
+        C=1 - draw to the user buffer (edi)
+      * SSS = (size multiplier)-1, so 0 = x1, 7 = x8
 Returned value:
   * function does not return value
 Remarks:
@@ -2123,8 +2099,6 @@ Remarks:
     and can be written by smaller amount of digits, it is supplemented
     by leading zeroes; if the number is big and can not be written by
     given amount of digits, extra digits are not drawn.
-  * Parameters of fonts are shown in the description of function 4
-    (text output).
 
 ---------------------- Constants for registers: ----------------------
   eax - SF_DRAW_NUMBER (47)
@@ -2517,7 +2491,7 @@ Returned value:
   * eax = if successful - pointer to a memory with data
   * eax = 1 - error
   * eax = -1 - main list area not found
- 
+
 ---------------------- Constants for registers: ----------------------
   eax - SF_CLIPBOARD (54)
   ebx - SSF_READ_CB (1)
@@ -4665,7 +4639,7 @@ Returned value:
   * ebx = errorcode
 Remarks:
 
-  Optstruct: 
+  Optstruct:
     dd level
     dd optionname
     dd optlength
@@ -4687,7 +4661,7 @@ Returned value:
   * ebx = errorcode
 Remarks:
 
-  Optstruct: 
+  Optstruct:
     dd level
     dd optionname
     dd optlength
@@ -4697,7 +4671,7 @@ Remarks:
   eax - SF_NETWORK_SOCKET (75)
    bl - SSF_GET_OPTIONS (9)
 ======================================================================
-============ Function 75, Subfunction 10, Get socketpair. ===========
+============ Function 75, Subfunction 10, Get socketpair. ============
 ======================================================================
 Parameters:
   * eax = 75 - function number
@@ -4718,12 +4692,16 @@ Parameters:
   * bh = device number
   * bl = subfunction number
 
-Ethernet (0)
+Protocols and subfunctions:
+
+0 - Ethernet:
         0 - Read MAC
-        
-IPv4 (1)
-        0 - Read # IP packets sent
-        1 - Read # IP packets received
+
+    common subfunctions:
+        0 - Read # packets sent
+        1 - Read # packets received
+
+1 - IPv4:
         2 - Read IP
         3 - Write IP
         4 - Read DNS
@@ -4732,32 +4710,96 @@ IPv4 (1)
         7 - Write subnet
         8 - Read gateway
         9 - Write gateway
-        
-ICMP (2)
-        0 - Read # ICMP packets sent
-        1 - Read # ICMP packets received
+
+2 - ICMP:
         3 - enable/disable ICMP echo reply
 
-UDP (3)
-        0 - Read # UDP packets sent
-        1 - Read # UDP packets received
+3 - UDP
+4 - TCP
 
-TCP (4)
-        0 - Read # TCP packets sent
-        1 - Read # TCP packets received 
-        
-ARP (5)
-        0 - Read # ARP packets sent
-        1 - Read # ARP packets received
+5 - ARP:
         2 - Read # ARP entry's
         3 - Read ARP entry
         4 - Add static ARP entry
         5 - Remove ARP entry (-1 = remove all)
         6 - Send ARP announce on specified interface
-        7 - Read # ARP conflicts (IP address conflicts) 
+        7 - Read # ARP conflicts (IP address conflicts)
 
 ---------------------- Constants for registers: ----------------------
   eax - SF_NETWORK_PROTOCOL (76)
+======================================================================
+========== Function 77, Subfunction 0, Create futex object ===========
+======================================================================
+Parameters:
+  * eax = 77 - function number
+  * ebx = 0 - subfunction number
+  * ecx = pointer to futex dword
+Returned value:
+  * eax = futex handle, 0 on error
+Remarks:
+  * Use subfunction 1 to destroy the futex.
+    The kernel destroys the futexes automatically when the process
+    terminates.
+
+---------------------- Constants for registers: ----------------------
+  eax - SF_FUTEX (77)
+  ebx - SSF_CREATE (0)
+======================================================================
+========= Function 77, Subfunction 1, Destroy futex object ===========
+======================================================================
+Parameters:
+  * eax = 77 - function number
+  * ebx = 1 - subfunction number
+  * ecx = futex handle
+Returned value:
+  * eax = 0 - successfull, -1 on error
+Remarks:
+  * The futex handle must have been created by subfunction 0
+
+---------------------- Constants for registers: ----------------------
+  eax - SF_FUTEX (77)
+  ebx - SSF_DESTROY (1)
+======================================================================
+=============== Function 77, Subfunction 2, Futex wait ===============
+======================================================================
+Parameters:
+  * eax = 77 - function number
+  * ebx = 2 - subfunction number
+  * ecx = futex handle
+  * edx = control value
+  * esi = timeout in system ticks or 0 for infinity
+Returned value:
+  * eax = 0 - successfull
+	 -1 - timeout
+	 -2 - futex dword does not have the same value as edx
+Remarks:
+  * This functionn tests that the value at the futex dword still
+    contains the expected control value, and if so, then sleeps
+    waiting for a wake operation on the futex.
+  * The futex handle must have been created by subfunction 0
+
+---------------------- Constants for registers: ----------------------
+  eax - SF_FUTEX (77)
+  ebx - SSF_WAIT (2)
+======================================================================
+=============== Function 77, Subfunction 3, Futex wake ===============
+======================================================================
+Parameters:
+  * eax = 77 - function number
+  * ebx = 3 - subfunction number
+  * ecx = futex handle
+  * edx = number of waiters to wake
+Returned value:
+  * eax = number of waiters that were woken up
+
+Remarks:
+  * This function wakes at most edx of the waiters that are
+    waiting (e.g., inside futex wait) on the futex dword
+  * The futex handle must have been created by subfunction 0
+
+---------------------- Constants for registers: ----------------------
+  eax - SF_FUTEX (77)
+  ebx - SSF_WAKE (3)
 ======================================================================
 =============== Function -1 - terminate thread/process ===============
 ======================================================================
@@ -4773,6 +4815,8 @@ Remarks:
   * This function terminates the current thread. Other thread can be
     killed by call to subfunction 2 of function 18.
 
+---------------------- Constants for registers: ----------------------
+  eax - SF_TERMINATE_PROCESS (-1)
 ======================================================================
 =========================== List of events ===========================
 ======================================================================
@@ -4810,18 +4854,17 @@ Codes of events:
 =================== Error codes of the file system ===================
 ======================================================================
   * 0 = success
-  * 1 = base and/or partition of a hard disk is not defined
-    (by subfunctions 7, 8 of function 21)
   * 2 = function is not supported for the given file system
   * 3 = unknown file system
-  * 4 = reserved, is never returned in the current implementation
   * 5 = file not found
   * 6 = end of file, EOF
   * 7 = pointer lies outside of application memory
   * 8 = disk is full
-  * 9 = FAT table is destroyed
+  * 9 = file system error
   * 10 = access denied
   * 11 = device error
+  * 12 = file system requires more memory
+
 Application start functions can return also following errors:
   * 30 = 0x1E = not enough memory
   * 31 = 0x1F = file is not executable

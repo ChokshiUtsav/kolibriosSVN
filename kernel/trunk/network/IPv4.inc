@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                 ;;
-;; Copyright (C) KolibriOS team 2004-2015. All rights reserved.    ;;
+;; Copyright (C) KolibriOS team 2004-2016. All rights reserved.    ;;
 ;; Distributed under terms of the GNU General Public License       ;;
 ;;                                                                 ;;
 ;;  IPv4.INC                                                       ;;
@@ -16,7 +16,7 @@
 ;;                                                                 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-$Revision$
+$Revision: 6220 $
 
 IPv4_MAX_FRAGMENTS              = 64
 IPv4_MAX_ROUTES                 = 64
@@ -634,6 +634,8 @@ ipv4_output:
         push    ecx ax edi
         mov     eax, edi
         call    ipv4_route              ; outputs device number in edi, dest ip in eax, source IP in edx
+        test    eax, eax
+        jz      .no_route
         push    edx
         test    edi, edi
         jz      .loopback
@@ -680,6 +682,12 @@ ipv4_output:
   .eth_error:
         DEBUGF  DEBUG_NETWORK_ERROR, "IPv4_output: ethernet error\n"
         add     esp, 3*4+2+6
+        xor     eax, eax
+        ret
+
+  .no_route:
+        DEBUGF  DEBUG_NETWORK_ERROR, "IPv4_output: No route to host!\n"
+        add     esp, 2*4+2
         xor     eax, eax
         ret
 
@@ -917,7 +925,7 @@ endp
 ;       ebx = outgoing device / 0                                 ;
 ;       edx = Source IP                                           ;
 ;                                                                 ;
-; OUT:  eax = Destination IP (or gateway IP)                      ;
+; OUT:  eax = Destination IP (may be gateway), 0 on error         ;
 ;       edx = Source IP                                           ;
 ;       edi = device number*4                                     ;
 ;                                                                 ;
@@ -926,11 +934,12 @@ endp
 ;                                                                 ;
 ;-----------------------------------------------------------------;
 align 4
-ipv4_route:     ; TODO: return error if no valid route found
+ipv4_route:
 
         test    ebx, ebx
         jnz     .got_device
 
+; Broadcast does not need gateway
         cmp     eax, 0xffffffff
         je      .broadcast
 
@@ -968,6 +977,10 @@ ipv4_route:     ; TODO: return error if no valid route found
 
         mov     edx, [IP_LIST + edi]            ; Source IP
 
+; Broadcast does not need gateway
+        cmp     eax, 0xffffffff
+        je      @f
+
 ; Check if we should route to gateway or not
         mov     ebx, [IP_LIST + edi]
         and     ebx, [SUBNET_LIST + edi]
@@ -979,6 +992,7 @@ ipv4_route:     ; TODO: return error if no valid route found
         ret
 
   .fail:
+        xor     eax, eax
         ret
 
 

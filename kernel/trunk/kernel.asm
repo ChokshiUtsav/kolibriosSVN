@@ -1153,7 +1153,7 @@ boot_log:
         mov     ebx, 10*65536
         mov     bx, word [boot_y]
         add     [boot_y], dword 10
-        mov     ecx, 0x80ffffff; ASCIIZ string with white color
+        mov     ecx, 0x8000ff00; ASCIIZ string with white color
         xor     edi, edi
         mov     edx, esi
         inc     edi
